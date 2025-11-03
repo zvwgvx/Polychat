@@ -9,8 +9,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #212121;
+  color: #e5e5e5;
 }
 
 #root {
   min-height: 100vh;
 }
+
+

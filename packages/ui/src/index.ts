@@ -6,3 +6,6 @@ export type { InputProps } from "./Input";
 
 export { Avatar } from "./Avatar";
 export type { AvatarProps } from "./Avatar";
+
+export { IconButton } from "./IconButton";
+export type { IconButtonProps } from "./IconButton";
