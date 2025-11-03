@@ -83,10 +83,14 @@ function App() {
 
   const createNewSession = () => {
     // Check if there's already an empty session
-    const hasEmptySession = sessions.some(session => session.messages.length === 0);
+    const emptySession = sessions.find(session => session.messages.length === 0);
     
-    // Only create a new session if there are no empty sessions
-    if (!hasEmptySession) {
+    // If there's already an empty session, switch to it
+    if (emptySession) {
+      setCurrentSessionId(emptySession.id);
+      setSidebarOpen(false);
+    } else {
+      // Otherwise, create a new session
       const newSession: ChatSession = {
         id: crypto.randomUUID(),
         title: "New chat",
@@ -154,6 +158,21 @@ function App() {
     );
   };
 
+  const updateSessionTitle = (sessionId: string, newTitle: string) => {
+    setSessions((prev) =>
+      prev.map((session) => {
+        if (session.id === sessionId) {
+          return {
+            ...session,
+            title: newTitle,
+            updatedAt: new Date()
+          };
+        }
+        return session;
+      })
+    );
+  };
+
   return (
     <div className="flex h-screen bg-[#212121]">
       {/* Sidebar */}
@@ -166,9 +185,9 @@ function App() {
           setSidebarOpen(false);
         }}
         onDeleteSession={deleteSession}
+        onRenameSession={updateSessionTitle}
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
-        hasEmptySession={sessions.some(session => session.messages.length === 0)}
       />
 
       {/* Main Content */}
