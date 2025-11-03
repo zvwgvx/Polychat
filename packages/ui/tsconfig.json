@@ -1,0 +1,5 @@
+{
+  "extends": "@polychat/tsconfig/react.json",
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
