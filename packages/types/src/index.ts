@@ -22,6 +22,7 @@ export interface ChatSession {
   messages: Message[];
   createdAt: Date;
   updatedAt: Date;
+  isPinned?: boolean;
 }
 
 // API Request/Response types

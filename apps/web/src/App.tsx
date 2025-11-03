@@ -30,9 +30,12 @@ function App() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [tempSession, setTempSession] = useState<ChatSession | null>(null);
 
-  // Get current session
-  const currentSession = sessions.find((s) => s.id === currentSessionId);
+  // Get current session - check temp session first, then saved sessions
+  const currentSession = tempSession && tempSession.id === currentSessionId 
+    ? tempSession 
+    : sessions.find((s) => s.id === currentSessionId);
 
   // Load sessions from localStorage on mount
   useEffect(() => {
@@ -76,22 +79,41 @@ function App() {
 
   // Save sessions to localStorage whenever they change
   useEffect(() => {
+    // Only save actual sessions, not temporary ones
     if (sessions.length > 0) {
       localStorage.setItem("polychat-sessions", JSON.stringify(sessions));
+    } else {
+      // If no sessions, remove the localStorage entry
+      localStorage.removeItem("polychat-sessions");
     }
   }, [sessions]);
 
+  // Handle beforeunload to save temporary session if needed
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // If there's a temporary session with messages, save it to localStorage
+      if (tempSession && tempSession.messages.length > 0) {
+        setSessions(prev => [tempSession, ...prev]);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [tempSession]);
+
   const createNewSession = () => {
-    // Check if there's already an empty session
-    const emptySession = sessions.find(session => session.messages.length === 0);
+    // Check if there's already an empty session (temp or saved)
+    const emptySession = [...sessions, ...(tempSession ? [tempSession] : [])].find(session => session.messages.length === 0);
     
     // If there's already an empty session, switch to it
     if (emptySession) {
       setCurrentSessionId(emptySession.id);
       setSidebarOpen(false);
     } else {
-      // Otherwise, create a new session
-      const newSession: ChatSession = {
+      // Otherwise, create a temporary session that isn't saved to localStorage yet
+      const newTempSession: ChatSession = {
         id: crypto.randomUUID(),
         title: "New chat",
         model: selectedModel.id,
@@ -100,13 +122,39 @@ function App() {
         updatedAt: new Date()
       };
 
-      setSessions((prev) => [newSession, ...prev]);
-      setCurrentSessionId(newSession.id);
+      setTempSession(newTempSession);
+      setCurrentSessionId(newTempSession.id);
       setSidebarOpen(false);
     }
   };
 
   const deleteSession = (sessionId: string) => {
+    // If trying to delete the temporary session
+    if (tempSession && tempSession.id === sessionId) {
+      setTempSession(null);
+      
+      // If deleting current session, switch to another one
+      if (sessionId === currentSessionId) {
+        if (sessions.length > 0) {
+          setCurrentSessionId(sessions[0].id);
+        } else {
+          // No sessions left, create a new temporary one
+          const newTempSession: ChatSession = {
+            id: crypto.randomUUID(),
+            title: "New chat",
+            model: selectedModel.id,
+            messages: [],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          setTempSession(newTempSession);
+          setCurrentSessionId(newTempSession.id);
+        }
+      }
+      return;
+    }
+
+    // Otherwise, delete from saved sessions
     setSessions((prev) => {
       const filtered = prev.filter((s) => s.id !== sessionId);
 
@@ -115,8 +163,8 @@ function App() {
         if (filtered.length > 0) {
           setCurrentSessionId(filtered[0].id);
         } else {
-          // No sessions left, create a new one
-          const newSession: ChatSession = {
+          // No sessions left, create a new temporary one
+          const newTempSession: ChatSession = {
             id: crypto.randomUUID(),
             title: "New chat",
             model: selectedModel.id,
@@ -124,8 +172,9 @@ function App() {
             createdAt: new Date(),
             updatedAt: new Date()
           };
-          setCurrentSessionId(newSession.id);
-          return [newSession];
+          setTempSession(newTempSession);
+          setCurrentSessionId(newTempSession.id);
+          return [];
         }
       }
 
@@ -134,28 +183,58 @@ function App() {
   };
 
   const updateSessionMessages = (sessionId: string, messages: Message[]) => {
-    setSessions((prev) =>
-      prev.map((session) => {
-        if (session.id === sessionId) {
-          // Auto-generate title from first user message
-          let title = session.title;
-          if (title === "New chat" && messages.length > 0) {
-            const firstUserMessage = messages.find((m) => m.role === "user");
-            if (firstUserMessage) {
-              title = firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? "..." : "");
-            }
-          }
-
-          return {
-            ...session,
-            messages,
-            title,
-            updatedAt: new Date()
-          };
+    // Check if this update is for a temporary session
+    if (tempSession && tempSession.id === sessionId) {
+      // Update the temporary session
+      let updatedTitle = tempSession.title;
+      
+      // Auto-generate title from first user message
+      if (updatedTitle === "New chat" && messages.length > 0) {
+        const firstUserMessage = messages.find((m) => m.role === "user");
+        if (firstUserMessage) {
+          updatedTitle = firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? "..." : "");
         }
-        return session;
-      })
-    );
+      }
+
+      const updatedTempSession = {
+        ...tempSession,
+        messages,
+        title: updatedTitle,
+        updatedAt: new Date()
+      };
+
+      // If this is the first message, save the temporary session to the sessions list
+      if (messages.length > 0 && tempSession.messages.length === 0) {
+        setSessions((prev) => [updatedTempSession, ...prev]);
+        setTempSession(null); // Remove the temp session since it's now saved
+      } else {
+        setTempSession(updatedTempSession); // Just update the temp session
+      }
+    } else {
+      // Update a saved session
+      setSessions((prev) =>
+        prev.map((session) => {
+          if (session.id === sessionId) {
+            // Auto-generate title from first user message
+            let title = session.title;
+            if (title === "New chat" && messages.length > 0) {
+              const firstUserMessage = messages.find((m) => m.role === "user");
+              if (firstUserMessage) {
+                title = firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? "..." : "");
+              }
+            }
+
+            return {
+              ...session,
+              messages,
+              title,
+              updatedAt: new Date()
+            };
+          }
+          return session;
+        })
+      );
+    }
   };
 
   const updateSessionTitle = (sessionId: string, newTitle: string) => {
@@ -165,6 +244,21 @@ function App() {
           return {
             ...session,
             title: newTitle,
+            updatedAt: new Date()
+          };
+        }
+        return session;
+      })
+    );
+  };
+
+  const togglePinSession = (sessionId: string) => {
+    setSessions((prev) =>
+      prev.map((session) => {
+        if (session.id === sessionId) {
+          return {
+            ...session,
+            isPinned: !session.isPinned,
             updatedAt: new Date()
           };
         }
@@ -186,6 +280,7 @@ function App() {
         }}
         onDeleteSession={deleteSession}
         onRenameSession={updateSessionTitle}
+        onPinSession={togglePinSession}
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
