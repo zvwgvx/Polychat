@@ -35,55 +35,55 @@ export function ChatInput({ onSend, isLoading, onStop }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t border-dark-700 bg-dark-800">
-      <div className="max-w-4xl mx-auto px-6 py-6">
+    <div className="pt-4 pb-6 px-4">
+      <div className="max-w-3xl mx-auto">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="relative flex items-end gap-2">
-            <div className="flex-1 relative">
-              <textarea
-                ref={textareaRef}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Send a message..."
-                className="w-full px-4 py-3 rounded-lg border border-dark-600 focus:border-dark-500 outline-none resize-none transition-all duration-150 bg-dark-700 text-gray-100 placeholder:text-gray-500 shadow-sm"
-                rows={1}
-                disabled={isLoading}
-                style={{ maxHeight: '200px' }}
-              />
-            </div>
+          <div className="relative bg-[#40414F] rounded-2xl shadow-lg border border-[#565869]">
+            <textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Send a message..."
+              className="w-full px-4 py-4 pr-12 bg-transparent text-[#ECECF1] placeholder:text-[#8E8EA0] outline-none resize-none rounded-2xl"
+              rows={1}
+              disabled={isLoading}
+              style={{ maxHeight: '200px' }}
+            />
 
-            {isLoading ? (
-              <button
-                type="button"
-                onClick={onStop}
-                className="flex-shrink-0 p-3 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors duration-150"
-              >
-                <StopCircle className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={!message.trim() || isLoading}
-                className={`flex-shrink-0 p-3 rounded-lg transition-all duration-150 ${
-                  message.trim()
-                    ? 'bg-accent-600 hover:bg-accent-500 text-white'
-                    : 'bg-dark-600 text-gray-600 cursor-not-allowed'
-                }`}
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            )}
+            <div className="absolute right-2 bottom-2">
+              {isLoading ? (
+                <button
+                  type="button"
+                  onClick={onStop}
+                  className="p-2 rounded-lg bg-[#565869] hover:bg-[#6E6E80] text-white transition-colors duration-150"
+                >
+                  <StopCircle className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!message.trim() || isLoading}
+                  className={`p-2 rounded-lg transition-all duration-150 ${
+                    message.trim()
+                      ? 'bg-[#ECECF1] hover:bg-white text-[#343541]'
+                      : 'bg-[#565869] text-[#8E8EA0] cursor-not-allowed opacity-40'
+                  }`}
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {isLoading && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-[#8E8EA0]">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full"
+                className="w-3 h-3 border-2 border-[#8E8EA0] border-t-transparent rounded-full"
               />
-              <span>Generating response...</span>
+              <span>Generating...</span>
             </div>
           )}
         </form>

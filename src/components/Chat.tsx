@@ -116,7 +116,7 @@ export function Chat() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-dark-800">
+    <div className="h-screen flex flex-col" style={{ backgroundColor: '#343541' }}>
       <Header onClearChat={handleClearChat} messageCount={messages.length} />
 
       {/* Messages Area */}
@@ -144,15 +144,16 @@ export function Chat() {
             exit={{ opacity: 0, y: 20 }}
             className="max-w-4xl mx-auto px-6 py-4"
           >
-            <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="rounded-lg p-4 flex items-start gap-3 border" style={{ backgroundColor: '#442726', borderColor: '#6B3433' }}>
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#F87171' }} />
               <div className="flex-1">
-                <h4 className="font-semibold text-red-300 mb-1">Error</h4>
-                <p className="text-sm text-red-400">{error}</p>
+                <h4 className="font-semibold mb-1" style={{ color: '#FCA5A5' }}>Error</h4>
+                <p className="text-sm" style={{ color: '#FECACA' }}>{error}</p>
               </div>
               <button
                 onClick={() => setError(null)}
-                className="text-red-400 hover:text-red-300 transition-colors"
+                className="transition-colors"
+                style={{ color: '#F87171' }}
               >
                 ×
               </button>

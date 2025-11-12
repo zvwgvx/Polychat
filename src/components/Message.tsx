@@ -17,17 +17,19 @@ export function Message({ message }: MessageProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className={`flex gap-4 px-6 py-6 border-b border-dark-700 ${
-        isUser ? 'bg-dark-800' : 'bg-dark-850'
-      }`}
+      className="flex gap-4 px-6 py-6 border-b"
+      style={{
+        backgroundColor: isUser ? '#343541' : '#444654',
+        borderColor: '#565869'
+      }}
     >
       <div className="flex-shrink-0">
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            isUser
-              ? 'bg-dark-600 text-gray-300'
-              : 'bg-dark-700 text-gray-300'
-          }`}
+          className="w-7 h-7 rounded-sm flex items-center justify-center"
+          style={{
+            backgroundColor: isUser ? '#5B5D6B' : '#19C37D',
+            color: 'white'
+          }}
         >
           {isUser ? (
             <User className="w-4 h-4" />
@@ -39,22 +41,23 @@ export function Message({ message }: MessageProps) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
-          <span className="font-medium text-gray-200 text-sm">
+          <span className="font-medium text-sm" style={{ color: '#ECECF1' }}>
             {isUser ? 'You' : 'Assistant'}
           </span>
         </div>
 
         <div className="prose prose-invert max-w-none">
           {isUser ? (
-            <p className="text-gray-200 leading-relaxed whitespace-pre-wrap m-0">
+            <p className="leading-relaxed whitespace-pre-wrap m-0" style={{ color: '#ECECF1' }}>
               {message.content}
             </p>
           ) : (
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
-              className="text-gray-200 leading-relaxed"
-              components={{
+            <div style={{ color: '#ECECF1' }}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+                className="leading-relaxed"
+                components={{
                 // Custom code block styling
                 code({ node, inline, className, children, ...props }: any) {
                   return !inline ? (
@@ -64,7 +67,11 @@ export function Message({ message }: MessageProps) {
                           onClick={() => {
                             navigator.clipboard.writeText(String(children));
                           }}
-                          className="text-xs bg-dark-600 hover:bg-dark-500 text-gray-300 px-2 py-1 rounded transition-colors"
+                          className="text-xs px-2 py-1 rounded transition-colors"
+                          style={{
+                            backgroundColor: '#565869',
+                            color: '#ECECF1'
+                          }}
                         >
                           Copy
                         </button>
@@ -86,7 +93,8 @@ export function Message({ message }: MessageProps) {
                   return (
                     <a
                       {...props}
-                      className="text-accent-400 hover:text-accent-300 underline transition-colors"
+                      className="underline transition-colors"
+                      style={{ color: '#6EA8FE' }}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -101,17 +109,19 @@ export function Message({ message }: MessageProps) {
                     </p>
                   );
                 },
-              }}
-            >
-              {message.content}
-            </ReactMarkdown>
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
+            </div>
           )}
 
           {message.isStreaming && (
             <motion.span
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className="inline-block w-1.5 h-4 bg-gray-400 ml-0.5 rounded-sm"
+              className="inline-block w-1.5 h-4 ml-0.5 rounded-sm"
+              style={{ backgroundColor: '#8E8EA0' }}
             />
           )}
         </div>

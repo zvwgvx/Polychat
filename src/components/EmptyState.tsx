@@ -25,7 +25,8 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-3xl font-semibold mb-3 text-gray-100"
+            className="text-3xl font-semibold mb-3"
+            style={{ color: '#ECECF1' }}
           >
             Polychat
           </motion.h2>
@@ -34,7 +35,8 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-base text-gray-400 max-w-lg mx-auto"
+            className="text-base max-w-lg mx-auto"
+            style={{ color: '#8E8EA0' }}
           >
             How can I help you today?
           </motion.p>
@@ -54,7 +56,18 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + index * 0.05 }}
                 onClick={() => onSuggestionClick(suggestion)}
-                className="text-left px-4 py-3 bg-dark-700 hover:bg-dark-600 border border-dark-600 hover:border-dark-500 rounded-lg text-sm text-gray-300 hover:text-gray-100 transition-all duration-150"
+                className="text-left px-4 py-3 rounded-lg text-sm transition-all duration-150 border"
+                style={{
+                  backgroundColor: '#40414F',
+                  borderColor: '#565869',
+                  color: '#ECECF1'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#4A4B57';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#40414F';
+                }}
               >
                 {suggestion}
               </motion.button>
