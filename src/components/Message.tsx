@@ -17,46 +17,43 @@ export function Message({ message }: MessageProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className={`flex gap-4 px-6 py-8 ${
-        isUser ? 'bg-white' : 'bg-neutral-50'
-      } border-b border-neutral-100`}
+      className={`flex gap-4 px-6 py-6 border-b border-dark-700 ${
+        isUser ? 'bg-dark-800' : 'bg-dark-850'
+      }`}
     >
       <div className="flex-shrink-0">
         <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center ${
+          className={`w-8 h-8 rounded-full flex items-center justify-center ${
             isUser
-              ? 'bg-gradient-to-br from-accent-500 to-accent-600 text-white'
-              : 'bg-gradient-to-br from-neutral-700 to-neutral-800 text-white'
+              ? 'bg-dark-600 text-gray-300'
+              : 'bg-dark-700 text-gray-300'
           }`}
         >
           {isUser ? (
-            <User className="w-5 h-5" />
+            <User className="w-4 h-4" />
           ) : (
-            <Bot className="w-5 h-5" />
+            <Bot className="w-4 h-4" />
           )}
         </div>
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
-          <span className="font-semibold text-neutral-900">
+          <span className="font-medium text-gray-200 text-sm">
             {isUser ? 'You' : 'Assistant'}
-          </span>
-          <span className="text-xs text-neutral-400">
-            {new Date(message.timestamp).toLocaleTimeString()}
           </span>
         </div>
 
-        <div className="prose prose-neutral max-w-none">
+        <div className="prose prose-invert max-w-none">
           {isUser ? (
-            <p className="text-neutral-800 leading-relaxed whitespace-pre-wrap">
+            <p className="text-gray-200 leading-relaxed whitespace-pre-wrap m-0">
               {message.content}
             </p>
           ) : (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight]}
-              className="text-neutral-800 leading-relaxed"
+              className="text-gray-200 leading-relaxed"
               components={{
                 // Custom code block styling
                 code({ node, inline, className, children, ...props }) {
@@ -68,7 +65,7 @@ export function Message({ message }: MessageProps) {
                           onClick={() => {
                             navigator.clipboard.writeText(String(children));
                           }}
-                          className="text-xs bg-neutral-700 hover:bg-neutral-600 text-white px-2 py-1 rounded transition-colors"
+                          className="text-xs bg-dark-600 hover:bg-dark-500 text-gray-300 px-2 py-1 rounded transition-colors"
                         >
                           Copy
                         </button>
@@ -90,12 +87,19 @@ export function Message({ message }: MessageProps) {
                   return (
                     <a
                       {...props}
-                      className="text-accent-600 hover:text-accent-700 underline decoration-accent-300 hover:decoration-accent-500 transition-colors"
+                      className="text-accent-400 hover:text-accent-300 underline transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {children}
                     </a>
+                  );
+                },
+                p({ node, children, ...props }) {
+                  return (
+                    <p className="mb-4 last:mb-0" {...props}>
+                      {children}
+                    </p>
                   );
                 },
               }}
@@ -108,7 +112,7 @@ export function Message({ message }: MessageProps) {
             <motion.span
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className="inline-block w-2 h-4 bg-accent-500 ml-1"
+              className="inline-block w-1.5 h-4 bg-gray-400 ml-0.5 rounded-sm"
             />
           )}
         </div>
