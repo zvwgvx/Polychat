@@ -56,8 +56,7 @@ export function Message({ message }: MessageProps) {
               className="text-gray-200 leading-relaxed"
               components={{
                 // Custom code block styling
-                code({ node, inline, className, children, ...props }) {
-                  const match = /language-(\w+)/.exec(className || '');
+                code({ node, inline, className, children, ...props }: any) {
                   return !inline ? (
                     <div className="relative group">
                       <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">

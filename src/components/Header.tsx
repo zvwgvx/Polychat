@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { MessageSquare, Trash2, Github, Settings } from 'lucide-react';
+import { Trash2, Github, Settings } from 'lucide-react';
 
 interface HeaderProps {
   onClearChat: () => void;
